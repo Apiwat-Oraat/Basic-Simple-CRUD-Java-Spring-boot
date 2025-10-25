@@ -1,26 +1,32 @@
 package com.example.temp.models;
 
+import jakarta.annotation.Generated;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "users")
 public class UserModel {
   
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
   private String name;
   private String email;
-  private String id;
+  
 
   public UserModel(){
 
   }
   public UserModel(String name, String email){
-    this.id = String.valueOf(System.currentTimeMillis());
     this.name = name;
     this.email = email;
-  }
-  public UserModel(String id, String name, String email){
-    this.name = name;
-    this.email = email;
-    this.id = id;
   }
 
-  public String getid(){
+  public Long getid(){
     return id;
   }
 

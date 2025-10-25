@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.temp.repositories.UserRepository;
+
+import jakarta.validation.Valid;
+
 import com.example.temp.dtos.UserDto;
 import com.example.temp.models.UserModel;
 
@@ -26,16 +29,16 @@ public class UserController {
 
   @GetMapping("/users")
   public List<UserDto> getUsers() {
-    return userRepository.getUsers().stream()
-        .map(user -> new UserDto(user.getid(), user.getName(), user.getEmail()))
+    return userRepository.findAll().stream()
+        .map(user -> new UserDto(user.getName(), user.getEmail()))
         .toList();
   }
 
   @GetMapping("/users/{id}")
   public UserDto getUserbyId(@PathVariable String id) {
-    return userRepository.getUsers().stream()
+    return userRepository.findAll().stream()
         .filter(user -> user.getid().equals(id))
-        .map(user -> new UserDto(user.getid(), user.getName(), user.getEmail()))
+        .map(user -> new UserDto(user.getName(), user.getEmail()))
         .findFirst()
         .orElse(null);
   }
@@ -43,29 +46,37 @@ public class UserController {
   @PostMapping("/users")
   public String createUser(@RequestBody UserDto userDto) {
     userRepository
-        .addUser(new UserModel(userDto.getName(), userDto.getEmail()));
+        .save(new UserModel(userDto.getName(), userDto.getEmail()));
     return "User create successfully";
   }
 
   @PutMapping("users/{id}")
   public String updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
-    UserModel updatedUser = new UserModel(id, userDto.getName(), userDto.getEmail());
-    userRepository.editUser(updatedUser);
+    UserModel updatedUser = new UserModel(userDto.getName(), userDto.getEmail());
+    userRepository.save(updatedUser);
     return "User updated successfully";
   }
 
-  @DeleteMapping("/user/{id}")
+  @DeleteMapping("/users/{id}")
   public String deleteUser(@PathVariable String id) {
-    UserModel userToDelete = userRepository.getUsers().stream()
+    UserModel userToDelete = userRepository.findAll().stream()
         .filter(user -> user.getid().equals(id))
         .findFirst()
         .orElse(null);
     if (userToDelete != null) {
-      userRepository.removeUser(userToDelete);
+      userRepository.delete(userToDelete);
       return "User deleted successfully";
     }
 
     return "User not found";
   }
+
+  @PostMapping("/users/search")
+  public UserDto getUserByEmail(@Valid @RequestBody UserDto userDto) {
+      return userRepository.findByEmail(userDto.getEmail())
+      .map(user -> new UserDto(user.getName(), user.getEmail()))
+      .orElse(null);
+  }
+  
 
 }

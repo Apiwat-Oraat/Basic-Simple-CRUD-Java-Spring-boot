@@ -1,15 +1,19 @@
 package com.example.temp.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class UserDto {
   private String name;
+
+  @NotBlank(message = "Email is required")
   private String email;
+
   private String id;
 
 
-  public UserDto(String id, String name, String email){
+  public UserDto(String name, String email){
     this.name = name;
     this.email = email;
-    this.id = id;
   }
 
   public String getid(){
